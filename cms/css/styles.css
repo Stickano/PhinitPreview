@@ -1,0 +1,152 @@
+@charset="utf-8";
+
+html {
+	height: 100%;
+	width : 100%;
+}
+
+body {
+	height    : 100%;
+	overflow-y: scroll;
+	width     : 100%;
+}
+
+/* Reset all margin and padding */
+* {
+	margin : 0;
+	padding: 0;
+    box-sizing: border-box;
+}
+
+/* Fix Image Sizes */
+img {
+	height: auto !important;
+	width : 100%;
+}
+
+/* Collapse table border */
+table, td {
+	border-collapse: collapse;
+}
+
+.inputSubmit {
+	padding         : 10px;
+	background-color: #337ab7;
+	float           : right;
+	color           : white;
+	border          : none;
+	border-radius   : 3px;
+	margin-bottom 	: 25px;
+}
+
+.container {
+	margin-left: 20%;
+	width      : 60%;
+    padding: 20px 0 20px 0;
+}
+
+@media(max-width: 1100px){
+    .container {
+        margin-left: 3%;
+        width: 94%;
+    }
+}
+
+.menuContainer {
+	border-bottom: 1px solid #555;
+	padding      : 5px;
+	width        : 100%;
+	margin-bottom: 25px;
+}
+
+.addButton {
+	background : none;
+	border     : none;
+	color      : blue;
+	cursor     : pointer;
+	float      : right;
+	outline    : none;
+	padding-top: 3px;
+}
+
+.editorContainer {
+	padding: 5px;
+}
+
+.contentTxt {
+	font-size: 90%;
+	clear: both;
+}
+
+.contentExample {
+	border: 1px solid #eee;
+	margin: 20px 0;
+}
+
+.contentExample td {
+	width: 50%;
+	vertical-align: top;
+	padding: 10px;
+	border:1px solid #eee;
+}
+
+.inputs {
+	width           : 100%;
+	border          : 1px solid #555;
+	border-radius   : 3px;
+	padding         : 5px;
+	outline-color   : #777;
+	background-color: white;
+	margin  		: 5px 0 45px 0;
+}
+
+#contentInput {
+	margin-bottom: 5px;
+}
+
+.input-file {
+  border: 1px solid #555;
+  border-radius: 3px;
+  color: black;
+  display: inline-block;
+  font-size: 0.77em;
+  line-height: 1.2em;
+  margin: 5px 0 45px 0;
+  padding: 6px;
+  overflow: hidden;
+  position: relative;
+  -webkit-transition: background-color 150ms;
+  transition: background-color 150ms;
+  float: left;
+  order: 0;
+  flex-grow: 1;  }
+  .input-file:hover {
+    background-color: #eee; }
+  .input-file:active {
+    background-color: #e5e5e5; }
+  .input-file input {
+    bottom: 0;
+    cursor: pointer;
+    display: inline-block;
+    left: 0;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%; }
+
+#fileInputContainer {
+	display: flex;
+	flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+.subSelectOption {
+    color: rgba(0,0,0,.5);
+}
+
+.examplesTd {
+    border-bottom:1px solid black;
+    padding:6px;
+}
