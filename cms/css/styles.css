@@ -67,6 +67,7 @@ table, td {
 	float      : right;
 	outline    : none;
 	padding-top: 3px;
+    text-decoration: none;
 }
 
 .editorContainer {

@@ -9,6 +9,14 @@ echo'<head>';
 echo'</head>';
 echo'<body>';
 
+    # Print out any errors
+    if($controller->getError()){
+        echo '<div class="errorContainer">';
+            echo $controller->getError();
+            echo '<button class="closeErr right"><i class="fa fa-times" aria-hidden="true"></i></button>';
+        echo '</div>';
+    }
+
     # This will load the appropriate view
     require_once('views/'.$singleton::$page.'.php');
 

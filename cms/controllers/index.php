@@ -1,6 +1,6 @@
 <?php
 
-require_once 'models/upload.php';
+require_once 'models/sftp.php';
 
 class IndexController{
 
@@ -16,12 +16,15 @@ class IndexController{
     private $error;
 
     # Various models
-    private $upload;
+    private $ftp;
 
     public function __construct(Connection $conn, Crud $db, Session $sessions){
         $this->conn     = $conn;
         $this->db       = $db;
         $this->sessions = $sessions;
+
+        $this->ftp = new Sftp('167.99.37.78');
+        $this->ftp->Keys('/home/stick/.ssh/id_rsa.pub','/home/stick/.ssh/id_rsa');
 
         # Fetch db values
         $select                    = ['*' => 'examples'];
@@ -30,16 +33,18 @@ class IndexController{
             $this->contents = array(); # Empty array in case db is empty
 
         # Set view values
-        self::failedAttempt();
+        self::setViewInputs();
         self::checkErrors();
     }
 
     /**
-     * Upon failed attempts, the inputs are saved and here
-     * they are set for the view to collect
+     * Upon failed attempts, the inputs are saved and here.
+     * When editing an example, the values from the db will
+     * also be fetched here.
+     * They'll be set for the view to collect
      * @return     Sets $viewInputValues
      */
-    private function failedAttempt(){
+    private function setViewInputs(){
         if($this->sessions->isset('category')){
             $this->viewInputValues = [  'headline'  => $this->sessions->get('headline'),
                                         'content'   => $this->sessions->get('content')];
@@ -47,11 +52,18 @@ class IndexController{
             $this->sessions->unset('headline');
             $this->sessions->unset('content');
         }
+
+        if (isset($_GET['edit']) && is_numeric($_GET['edit'])){
+            $id = $_GET['edit'];
+            if(!empty($this->contents[$id])){
+                $this->viewInputValues = [  'headline'  => $this->contents[$id]['headline'],
+                                            'content'   => $this->contents[$id]['content']];
+            }
+        }
     }
 
     /**
-     * Here the input values for the view, from failed attempts,
-     * are returned to the view
+     * Return any input values to the view.
      * @return array Input values
      */
     public function getViewInputs(){
@@ -78,32 +90,61 @@ class IndexController{
         # Insert example to db
         if(!$this->sessions->isset('error')){
 
-            # Handle file upload (PHP model)
-            # TODO: ftp upload
-            $input = 'file';
-            $filetypes = ['php'];
-            $this->upload = new Upload($input, $filetypes);
-            #$this->upload->noReturn();
-            $this->upload->overwrite();
-            $this->upload->upload('../client/models/');
+            # Transfer model to server
+            $file = $_FILES['file'];
+            $this->ftp->Connect('stick');
+            $this->ftp->SendFile($file, '/var/www/html/models/');
 
             # Insert the preview
             $values = ['headline'   => $headline,
                        'content'    => $content];
 
-            if($this->db->create('examples', $values)){
-                $this->sessions->unset('headline');
-                $this->sessions->unset('content');
+            try {
+                if($this->db->create('examples', $values)){
+                    $this->sessions->unset('headline');
+                    $this->sessions->unset('content');
+                }
+            } catch (Exception $e) {
+                $this->sessions->set('error', $e);
             }
         }
 
-        header("location:".$_SERVER['PHP_SELF']);
+        header("location:index.php");
+    }
+
+    /**
+     * Updates an example in the database
+     * @param  int    $id The id of which example to update
+     * @return        Redirects back to CMS page
+     */
+    public function editExample(int $id){
+        if(empty($this->contents[$id])){
+            header("location:index.php");
+            exit;
+        }
+
+        if(empty($_POST['headline']) || empty($_POST['content'])){
+            $this->sessions->set('error', 'Headline and Content both needs values.');
+            header("location:index.php");
+            exit;
+        }
+
+        $table = "examples";
+        $data  = ['headline' => $_POST['headline'],
+                  'content'  => $_POST['content']];
+        $where = ['id' => $id];
+        try {
+            if ($this->db->update($table, $data, $where))
+                $this->sessions->set('message', 'Example updated');
+        } catch (Exception $e) {
+            $this->sessions->set('error', $e);
+        }
+        header("location:index.php");
     }
 
     /**
      * Returns all the examples
-     * @param  int|null $categoryId All examples within this category
-     * @return array                All the assosiated examples
+     * @return array   Examples, fetched from the db
      */
     public function getExamples(){
         return $this->contents;
@@ -126,6 +167,14 @@ class IndexController{
      */
     public function getError(){
         return $this->error;
+    }
+
+    /**
+     * Fetches all the files (modules) from the PhinitPreview server
+     */
+    public function GetModules() {
+        $this->ftp->Connect('stick');
+        return $this->ftp->ScanDir('/var/www/html/models/');
     }
 }
 

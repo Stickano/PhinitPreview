@@ -38,57 +38,56 @@ class Crud{
         # Build the WHERE clause
         if($where != null && !empty($where)){
 
-            # Check that the array length equals 1
-            if(count($where) != 1)
-                throw new Exception("Error in WHERE handling - pass an array with one key and its value!");
+            $whereString = 'WHERE ';
 
-            # Secure the inputs
-            $whereSel = mysqli_real_escape_string($this->conn, key($where));
-            $whereVal = mysqli_real_escape_string($this->conn, $where[key($where)]);
+            $br = 0;
+            foreach ($where as $key => $value) {
+                # Secure the inputs
+                $whereSel = mysqli_real_escape_string($this->conn, $key);
+                $whereVal = mysqli_real_escape_string($this->conn, $value);
 
-            # Add to query string
-            $where = 'WHERE '.$whereSel.'='.$whereVal;
+                if ($br != 0)
+                    $whereString .= ' AND ';
+                $br++;
+                $whereString .= $whereSel."='".$whereVal."'";
+            }
+
+            $where = $whereString;
         }
 
         # Build the JOIN clause
         $joinString = "";
-        if(!empty($join) && $join != null){
+        if(!empty($join) && $join != null && is_array($join)){
 
-            foreach ($join as $joins) {
-                $br = 0;
-                # Check if the clauses are placed in arrays
-                if(!is_array($joins))
-                    throw new Exception("Error in JOIN handling - pass an array with one (or more) arrays with the clauses");
+            # Open each of the JOIN clauses
+            foreach ($join as $key => $value) {
+                if(!is_array($value)){
 
-                # Open each of the JOIN clauses
-                foreach ($joins as $key => $value) {
-                    if(!is_array($value)){
+                    # Secure inputs
+                    $whichJoin  = mysqli_real_escape_string($this->conn, $key);
+                    $whichTable = mysqli_real_escape_string($this->conn, $value);
+
+                    # Add to query string
+                    $joinString .= strtoupper($whichJoin)." JOIN ";
+                    $joinString .= $whichTable;
+                    $joinString .= " ON ";
+
+                # The ON clauses
+                }else{
+                    $br = 0;
+                    foreach ($value as $on => $onVal) {
 
                         # Secure inputs
-                        $whichJoin  = mysqli_real_escape_string($this->conn, $key);
-                        $whichTable = mysqli_real_escape_string($this->conn, $value);
+                        $onVal = mysqli_real_escape_string($this->conn, $onVal);
+                        $on    = mysqli_real_escape_string($this->conn, $on);
 
-                        # Add to query string
-                        $joinString .= strtoupper($whichJoin)." JOIN ";
-                        $joinString .= $whichTable;
-                        $joinString .= " ON ";
+                        # Add an 'AND' on several conditions
+                        if($br != 0)
+                            $joinString .= " AND ";
 
-                    # The ON clauses
-                    }else{
-                        foreach ($value as $on => $onVal) {
-
-                            # Secure inputs
-                            $onVal = mysqli_real_escape_string($this->conn, $onVal);
-                            $on    = mysqli_real_escape_string($this->conn, $on);
-
-                            # Add an 'AND' on several conditions
-                            if($br != 0)
-                                $joinString .= " AND ";
-
-                            # Add to the query string
-                            $joinString .= $on."=".$onVal;
-                            $br++;
-                        }
+                        # Add to the query string
+                        $joinString .= $on."=".$onVal;
+                        $br++;
                     }
                 }
             }
@@ -98,7 +97,7 @@ class Crud{
         if(!empty($order) && $order != null){
 
             # Check if array length equals 1
-            if(count($order) > 1)
+            if(count($order) != 1)
                 throw new Exception("Error in ORDER handling - pass an array with one key and its value");
 
             # Check that the value is either ASC or DESC
@@ -120,7 +119,7 @@ class Crud{
         if($limit != null){
 
             # Check that it's a integer value
-            if(!is_int($limit))
+            if(!is_numeric($limit))
                 throw new Exception("Error in LIMIT handling - pass an integer value");
 
             # Check that it's a positive value
@@ -132,7 +131,7 @@ class Crud{
         }
 
         # Build and run the query
-        $sql = "SELECT ".$data." FROM ".$from." ".$where." ".$joinString." ".$order." ".$limit;
+        $sql = "SELECT ".$data." FROM ".$from." ".$joinString." ".$where." ".$order." ".$limit;
         $query = $this->conn->query($sql);
 
         # Return SQL error if any
@@ -144,7 +143,7 @@ class Crud{
         if($query->num_rows > 0){
             $result = array();
             while($row = $query->fetch_assoc()){
-                $result[] = $row;
+                $result[$row['id']] = $row;
             }
         }
 
@@ -154,7 +153,7 @@ class Crud{
     /**
      * Insert data to the db
      * @param  string $table  table to insert data
-     * @param  array  $data   Array with row => value
+     * @param  array  $data   row => value
      * @return bool|string    True on succes/ SQL error on fail
      */
     public function create(string $table, array $data){
@@ -168,7 +167,7 @@ class Crud{
         # Extract key/value and build em correctly for the query
         foreach ($data as $key => $val) {
             $br++;
-            $rows .= mysqli_real_escape_string($this->conn, $key);
+            $rows   .= mysqli_real_escape_string($this->conn, $key);
             $values .= "'".mysqli_real_escape_string($this->conn, $val)."'";
 
             # Add commas after each value (except the last)
@@ -209,22 +208,34 @@ class Crud{
         if(!is_array($where) && count($where) != 1 && $where != null)
             throw new Exception("Error in WHERE handling - pass an array with one key and its value");
 
-        # Secure inputs
-        $table = mysqli_real_escape_string($this->conn, $table);
-        $set = mysqli_real_escape_string($this->conn, key($data));
-        $setVal = mysqli_real_escape_string($this->conn, $data[key($data)]);
+        # Retreive and secure inputs
+        $rows   = "";
+        $values = "";
+        $br     = 0;
+        $data   = array_filter($data);
+        $table  = mysqli_real_escape_string($this->conn, $table);
+
+        # Extract key/value and build em correctly for the query
+        foreach ($data as $key => $val) {
+            $br++;
+            $row     = mysqli_real_escape_string($this->conn, $key);
+            $value   = mysqli_real_escape_string($this->conn, $val);
+            $values .= $row."='".$value."'";
+
+            if ($br < sizeof($data))
+                $values .= ", ";
+        }
+
+        # Build where clause
         if($where != null){
             $whereVal = mysqli_real_escape_string($this->conn, $where[key($where)]);
-            $where = mysqli_real_escape_string($this->conn, key($where));
-            $where = " WHERE ".$where."='".$whereVal."'";
+            $where    = mysqli_real_escape_string($this->conn, key($where));
+            $where    = "WHERE ".$where."='".$whereVal."'";
         }
 
         # Build and run query
-        $sql = "UPDATE ".$table." SET ".$set."='".$setVal."'".$where;
-        $query = $this->conn->query($sql);
-
-        # Return SQL error if any
-        if(!$query)
+        $sql =  "UPDATE ".$table." SET ".$values." ".$where;
+        if(!$this->conn->query($sql))
             throw new Exception("Error: ".$this->conn->error);
 
         return true;
@@ -243,9 +254,9 @@ class Crud{
             throw new Exception("Error in WHERE handling - pass an array with one key and its value");
 
         # Secure the inputs
-        $table = mysqli_real_escape_string($this->conn, $table);
+        $table    = mysqli_real_escape_string($this->conn, $table);
         $whereVal = mysqli_real_escape_string($this->conn, $where[key($where)]);
-        $where = mysqli_real_escape_string($this->conn, key($where));
+        $where    = mysqli_real_escape_string($this->conn, key($where));
 
         # Build and run query
         $sql = "DELETE FROM ".$table." WHERE ".$where."='".$whereVal."'";

@@ -1,10 +1,10 @@
 <?php
 
-if($controller->getError())
-    echo $controller->getError();
-
 if(isset($_POST['addExample']))
     $controller->addExample();
+
+if(isset($_POST['editExample']))
+    $controller->editExample($_GET['edit']);
 
 echo'<div class="container">';
 
@@ -12,9 +12,14 @@ echo'<div class="container">';
     echo'<div class="menuContainer">';
         echo'Phinit CMS';
         if (!isset($_GET['edit']) && !isset($_GET['add']))
-            echo'<a href="index.php?add" class="addButton">Add</a>';
+            echo'<a href="index.php?add" class="addButton">Add Example</a>';
         else
             echo'<a href="index.php" class="addButton">Close</a>';
+
+        if (!isset($_GET['modules']))
+            echo'<a href="index.php?modules" class="addButton">Files '.$singleton->spaces(5).'</a>';
+        else
+            echo'<a href="index.php" class="addButton">Examples '.$singleton->spaces(5).'</a>';
     echo'</div>';
 
     # Add/Edit container
@@ -72,30 +77,56 @@ echo'<div class="container">';
                 echo'</div>';
 
                 echo'<textarea rows="30" class="inputs" id="contentInput" name="content">'.$controller->getViewInputs()['content'].'</textarea>';
-                echo'<input type="submit" class="inputSubmit" name="addExample"/>';
+                if (!isset($_GET['edit']))
+                    echo'<input type="submit" class="inputSubmit" name="addExample" value="Add Example"/>';
+                else
+                    echo'<input type="submit" class="inputSubmit" name="editExample" value="Update Example"/>';
 
             echo'</form>';
         echo'</div>';
     }
 
-    # All examples (list)
-    $br = 0;
-    echo'<table style="width:100%;">';
-    echo'<tr>';
-    foreach ($controller->getExamples() as $key) {
-        $bg = "white";
-        $br++;
-        if ($br == 2){
-            $bg = "#f1f1f1";
-            $br = 0;
+    if(isset($_GET['modules']) && $controller->GetModules()){
+        $br = 0;
+        echo'<table style="width:100%;">';
+        echo'<tr>';
+        foreach ($controller->GetModules() as $key) {
+            if($key == "." || $key == "..")
+                continue;
+
+            $bg = "white";
+            $br++;
+            if ($br % 2 == 0)
+                $bg = "#f1f1f1";
+
+            echo'<td class="examplesTd" style="background-color:'.$bg.';">';
+                echo $key;
+            echo'</td>';
+            echo'</tr><tr>';
         }
-        echo'<td class="examplesTd" style="background-color:'.$bg.';">';
-            echo "<a href='index.php?edit=".$key['id']."' title='Edit Example'>".$key['headline']."</a>";
-        echo'</td>';
-        echo'</tr><tr>';
+        echo'</tr>';
+        echo'</table>';
     }
-    echo'</tr>';
-    echo'</table>';
+
+    if(!isset($_GET['modules']) && !isset($_GET['add']) && !isset($_GET['edit'])){
+        # All examples (list)
+        $br = 0;
+        echo'<table style="width:100%;">';
+        echo'<tr>';
+        foreach ($controller->getExamples() as $key) {
+            $bg = "white";
+            $br++;
+            if ($br % 2 == 0)
+                $bg = "#f1f1f1";
+
+            echo'<td class="examplesTd" style="background-color:'.$bg.';">';
+                echo "<a href='index.php?edit=".$key['id']."' title='Edit Example'>".$key['headline']."</a>";
+            echo'</td>';
+            echo'</tr><tr>';
+        }
+        echo'</tr>';
+        echo'</table>';
+    }
 
 echo'</div>';
 
