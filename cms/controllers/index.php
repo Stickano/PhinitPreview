@@ -24,7 +24,8 @@ class IndexController{
         $this->sessions = $sessions;
 
         $this->ftp = new Sftp('167.99.37.78');
-        $this->ftp->Keys('/home/stick/.ssh/id_rsa.pub','/home/stick/.ssh/id_rsa');
+        $this->ftp->Keys('/home/stick/Dropbox/www/PhinitPreview/.ssh/id_rsa.pub',
+                         '/home/stick/Dropbox/www/PhinitPreview/.ssh/id_rsa');
 
         # Fetch db values
         $select                    = ['*' => 'examples'];
@@ -91,21 +92,24 @@ class IndexController{
         if(!$this->sessions->isset('error')){
 
             # Transfer model to server
-            $file = $_FILES['file'];
-            $this->ftp->Connect('stick');
-            $this->ftp->SendFile($file, '/var/www/html/models/');
+            try {
+                $file = $_FILES['file'];
+                $this->ftp->Connect('stick');
+                $this->ftp->SendFile($file, '/var/www/html/models/');
+            }catch(Exception $e){
+                $this->sessions->set('error', $e.getMessage());
+            }
 
             # Insert the preview
-            $values = ['headline'   => $headline,
-                       'content'    => $content];
-
             try {
+                $values = ['headline'   => $headline,
+                       'content'    => $content];
                 if($this->db->create('examples', $values)){
                     $this->sessions->unset('headline');
                     $this->sessions->unset('content');
                 }
             } catch (Exception $e) {
-                $this->sessions->set('error', $e);
+                $this->sessions->set('error', $e.getMessage());
             }
         }
 
@@ -137,7 +141,7 @@ class IndexController{
             if ($this->db->update($table, $data, $where))
                 $this->sessions->set('message', 'Example updated');
         } catch (Exception $e) {
-            $this->sessions->set('error', $e);
+            $this->sessions->set('error', $e.getMessage());
         }
         header("location:index.php");
     }
@@ -172,9 +176,48 @@ class IndexController{
     /**
      * Fetches all the files (modules) from the PhinitPreview server
      */
-    public function GetModules() {
-        $this->ftp->Connect('stick');
-        return $this->ftp->ScanDir('/var/www/html/models/');
+    public function getModules() {
+        try{
+            $this->ftp->Connect('stick');
+            return $this->ftp->ScanDir('/var/www/html/models/');
+        }catch(Exception $e){
+            $this->sessions->set('error',$e->getMessage());
+        }
+    }
+
+    /**
+     * Deletes an example from the database
+     * @return    Redirects back to index
+     */
+    public function deleteExample() {
+        $id = $_POST['id'];
+        $headline = $_POST['headline'];
+        if (!empty($this->contents[$id])){
+            try{
+                $table = "examples";
+                $where = ['id' => $id];
+                if ($this->db->delete($table, $where))
+                    $this->sessions->set('message', 'Deleted '.$headline);
+            }catch(Exception $e){
+                $this->sessions->set('error', $e->getMessage());
+            }
+        }
+        header("location:index.php");
+    }
+
+    /**
+     * Deletes one of the uploaded classes
+     * @return     Redirects back
+     */
+    public function deleteFile(){
+        try{
+            $this->ftp->Connect('stick');
+            if($this->ftp->RemoveFile('/var/www/html/models/'.$_POST['file']))
+                $this->sessions->set('message', 'Removed '.$_POST['file']);
+        }catch(Exception $e){
+            $this->sessions->set('error',$e->getMessage());
+        }
+        header("location:index.php?modules");
     }
 }
 

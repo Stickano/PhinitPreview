@@ -6,6 +6,12 @@ if(isset($_POST['addExample']))
 if(isset($_POST['editExample']))
     $controller->editExample($_GET['edit']);
 
+if(isset($_POST['deleteExample']))
+    $controller->deleteExample();
+
+if(isset($_POST['deleteFile']))
+    echo $controller->deleteFile();
+
 echo'<div class="container">';
 
     # Menu (header)
@@ -86,11 +92,12 @@ echo'<div class="container">';
         echo'</div>';
     }
 
-    if(isset($_GET['modules']) && $controller->GetModules()){
+    # List all of the models
+    if(isset($_GET['modules']) && $controller->getModules()){
         $br = 0;
         echo'<table style="width:100%;">';
         echo'<tr>';
-        foreach ($controller->GetModules() as $key) {
+        foreach ($controller->getModules() as $key) {
             if($key == "." || $key == "..")
                 continue;
 
@@ -102,14 +109,20 @@ echo'<div class="container">';
             echo'<td class="examplesTd" style="background-color:'.$bg.';">';
                 echo $key;
             echo'</td>';
+            echo'<td class="examplesTd" style="background-color:'.$bg.';">';
+                echo'<form method="post" >';
+                    echo'<button type="submit" title="'.$key.'" class="addButton" name="deleteFile">Delete</button>';
+                    echo'<input type="hidden" name="file" value="'.$key.'">';
+                echo'</form>';
+            echo'</td>';
             echo'</tr><tr>';
         }
         echo'</tr>';
         echo'</table>';
     }
 
+    # List all examples
     if(!isset($_GET['modules']) && !isset($_GET['add']) && !isset($_GET['edit'])){
-        # All examples (list)
         $br = 0;
         echo'<table style="width:100%;">';
         echo'<tr>';
@@ -121,6 +134,13 @@ echo'<div class="container">';
 
             echo'<td class="examplesTd" style="background-color:'.$bg.';">';
                 echo "<a href='index.php?edit=".$key['id']."' title='Edit Example'>".$key['headline']."</a>";
+            echo'</td>';
+            echo'<td class="examplesTd" style="background-color:'.$bg.';">';
+                echo'<form method="post" >';
+                    echo'<button type="submit" title="'.$key['headline'].'" class="addButton" name="deleteExample">Delete</button>';
+                    echo'<input type="hidden" name="id" value="'.$key['id'].'">';
+                    echo'<input type="hidden" name="headline" value="'.$key['headline'].'">';
+                echo'</form>';
             echo'</td>';
             echo'</tr><tr>';
         }

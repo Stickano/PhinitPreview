@@ -7,12 +7,14 @@ class Sftp {
     private $session;
     private $sftp;
 
+    private $keys;
     private $privateKey;
     private $publicKey;
 
     public function __construct(string $host, int $port=22) {
         $this->host = $host;
         $this->port = $port;
+        $this->keys = false;
     }
 
     /**
@@ -21,8 +23,11 @@ class Sftp {
      * @param string $private Path to private-key (~/.ssh/id_rsa)
      */
     public function Keys(string $public, string $private) {
-        $this->privateKey = $private;
-        $this->publicKey  = $public;
+        if(is_file($private) && is_file($public)) {
+            $this->privateKey = $private;
+            $this->publicKey  = $public;
+            $this->keys       = true;
+        }
     }
 
     /**
@@ -38,12 +43,16 @@ class Sftp {
             throw new Exception("Cannot connect to server");
         }
 
-        if (!isset($this->privateKey)){
+        # Password authentication
+        if (!$this->keys) {
             if (!ssh2_auth_password($this->session, $username, $password)){
                 $failed = true;
                 throw new Exception("Invalid username or password");
             }
-        }else{
+        }
+
+        # Priv/pub key authentication
+        if ($this->keys){
             if (!ssh2_auth_pubkey_file($this->session,
                                         $username,
                                         $this->publicKey,

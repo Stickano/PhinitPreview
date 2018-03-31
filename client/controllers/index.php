@@ -19,7 +19,8 @@ class IndexController{
 
         # Fetch all db values (examples)
         $select = ['*' => 'examples'];
-        $this->examples = $this->db->read($select);
+        if ($this->db->read($select))
+            $this->examples = $this->db->read($select);
 
         # Handle models
         self::fetchModels();
