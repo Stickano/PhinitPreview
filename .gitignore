@@ -2,3 +2,9 @@ PhinitPreview.sublime-project
 PhinitPreview.sublime-workspace
 .phpintel/
 .ssh/
+icon_org.png
+db_with_data.sql
+client/resources/crypt.php
+client/resources/login.php
+client/resources/mailer.php
+client/resources/upload.php

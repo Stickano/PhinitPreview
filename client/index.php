@@ -5,7 +5,7 @@ echo'<head>';
 
 	# Include the meta/headers
 	require_once('resources/meta.php');
-    
+
 echo'</head>';
 echo'<body>';
 

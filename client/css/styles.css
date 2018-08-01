@@ -1,9 +1,9 @@
 @charset="utf-8";
 
 html {
-	height: 100%;
-	width : 100%;
-	font-size: 100%;
+    height   : 100%;
+    width    : 100%;
+    font-size: 100%;
 }
 
 @media (min-width: 640px) {
@@ -14,14 +14,15 @@ html {
 }
 
 body {
-	height    : 100%;
-	width     : 100%;
-	overflow-y: scroll;
+    height     : 100%;
+    width      : 100%;
+    overflow-y : scroll;
+    padding-top: 40px;
 }
 
 * {
-	margin : 0;
-	padding: 0;
+    margin    : 0;
+    padding   : 0;
     box-sizing: border-box;
 }
 
@@ -31,6 +32,13 @@ h1 {
 
 h1, h2, h3, h4, h5 {
     margin:.5em 0 .4em;
+}
+
+h3 {
+    margin       : 0;
+    padding      : 0;
+    margin-bottom: -14px;
+	/* margin-top: -34px; */
 }
 
 p {
@@ -49,69 +57,199 @@ table, td {
 }
 
 .headerContainer {
-	width:100%;
-	height: 50px;
-	padding: 16px;
-	background-color: #f9f9f9;
-	border-bottom:1px solid #999;
-	z-index: 999;
+    width           :100%;
+    height          : 50px;
+    padding         : 16px;
+    background-color: #f9f9f9;
+    border-bottom   :1px solid #999;
+    z-index         : 999;
+    position        : fixed;
+    top             : 0;
 }
 
 .logoTextContainer {
-	padding: 0 30px 0 12px;
-	color: rgba(119,119,119,.5);
-	z-index: 999;
-	font-family: monospace;
+    padding    : 0 30px 0 12px;
+    color      : rgba(119,119,119,.5);
+    z-index    : 999;
+    font-family: monospace;
 }
 
 .exampleContainer {
-	margin: 40px 22px 80px 322px;
-	position: relative;
+    margin   : 0 22px 80px 290px;
+    position : relative;
+    max-width: 900px;
 }
 
 pre {
 	font-family: "Courier 10 Pitch", Courier, monospace;
 	font-size  : 95%;
-	line-height: 140%;
-	margin     : 10px 0 45px 0;
-	white-space: -moz-pre-wrap;
-	white-space: -o-pre-wrap;
-	white-space: pre-wrap;
+	line-height: 1em;
+	margin     : 10px 0;
 	white-space: pre;
 }
 code {
 	background : #fcfcfb;
 	border     : 1px solid #bebab0;
-	display    : block;
 	font-family: Monaco, Consolas, "Andale Mono", "DejaVu Sans Mono", monospace;
 	font-size  : 95%;
-	line-height: 140%;
+	line-height: .8em;
 	overflow   : auto;
 	padding    : 0.5em 1em;
-	white-space: -moz-pre-wrap;
-	white-space: -o-pre-wrap;
-	white-space: pre-wrap;
 	white-space: pre;
 }
 
+mark {
+    font-family     : Monaco, Consolas, "Andale Mono", "DejaVu Sans Mono", monospace;
+    background-color: #fffacd;
+    padding         : 1px 1px;
+}
+
 .menuContainer {
-	position: fixed;
-	left: 0;
-	top: 50px;
-	bottom: 0;
-	width: 300px;
-	padding: 16px;
-	background-color: #f9f9f9;
-	border-right:1px solid #999;
-	padding-left: 60px;
+    position        : fixed;
+    left            : 0;
+    top             : 50px;
+    bottom          : 0;
+    width           : 250px;
+    padding         : 16px;
+    background-color: #f9f9f9;
+    border-right    :1px solid #999;
+    padding-left    : 30px;
+    overflow        : auto;
 }
 
 .menuButton {
-	color: #282a2e;
-	text-decoration: none;
-	font-family: monospace;
+    color          : #282a2e;
+    text-decoration: none;
+    font-family    : monospace;
 }
 
 .menuButtonContainer {
-	margin: 5px 0;
+	margin: 10px 0;
+}
+
+.row:after {
+	clear  : both;
+	content: " ";
+	display: table;
+}
+
+.clearfix:before, .clearfix:after {
+	content: " ";
+	display: table;
+}
+.clearfix {
+  *zoom: 1;
+  clear: both;
+}
+
+[class*="col-"] {
+    float  : left;
+    padding: 1rem;
+}
+
+.right {
+	float:right;
+}
+
+.col-100 { width: 100%;  }
+.col-66  { width: 66.7%; }
+.col-50  { width: 50%;   }
+.col-33  { width: 33.3%; }
+.col-25  { width: 25%;   }
+
+/* Inputs */
+.input-simple {
+	border-radius: 3px;
+	border       : 1px solid #555;
+	display      : block;
+	margin       : 15px 0;
+	padding      : 6px;
+}
+.input-simple:focus {
+	border            : 1px solid #5bc0de;
+	-webkit-box-shadow: 0, 0, 2px, 1px, #5bc0de;
+	box-shadow        : 0, 0, 2px, 1px, #5bc0de;
+}
+
+.input-button {
+	background-color  : white;
+	border            : 1px solid #555;
+	border-radius     : 3px;
+	color             : black;
+	cursor            : pointer;
+	display           : block;
+	font-size         : 0.77em;
+	line-height       : 1.2em;
+	margin            : 15px 0;
+	padding           : 6px 10px;
+	-webkit-transition: background-color 150ms;
+	transition        : background-color 150ms;
+}
+.input-button:hover {
+	background-color: #eee;
+}
+.input-button:active {
+	background-color: #e5e5e5;
+}
+
+.input-textarea {
+	border-radius: 3px;
+	border       : 1px solid #555;
+	display      : block;
+	margin       : 15px 0;
+	padding      : 6px;
+	min-width    : 210px;
+	min-height   : 150px;
+}
+.input-textarea:focus {
+	border            : 1px solid #5bc0de;
+	-webkit-box-shadow: 0, 0, 2px, 1px, #5bc0de;
+	box-shadow        : 0, 0, 2px, 1px, #5bc0de;
+}
+
+.input-file {
+  border            : 1px solid #555;
+  border-radius     : 3px;
+  color             : black;
+  display           : inline-block;
+  font-size         : 0.77em;
+  line-height       : 1.2em;
+  margin            : 15px 0;
+  padding           : 6px;
+  overflow          : hidden;
+  position          : relative;
+  -webkit-transition: background-color 150ms;
+  transition        : background-color 150ms;
+}
+.input-file:hover {
+    background-color: #eee;
+}
+.input-file:active {
+    background-color: #e5e5e5;
+}
+.input-file input {
+    bottom  : 0;
+    cursor  : pointer;
+    display : inline-block;
+    left    : 0;
+    opacity : 0;
+    overflow: hidden;
+    position: absolute;
+    right   : 0;
+    top     : 0;
+    width   : 100%;
+}
+
+.input-button.bg-green {
+  background-color: #5cb85c;
+  border          : 1px solid #458a45;
+  color           : white;
+}
+.input-button.bg-green:hover {
+    background-color: #4e9d4e;
+    color           : white;
+}
+.input-button.bg-green:active {
+    background-color: #458a45;
+    color           : white;
 }

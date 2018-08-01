@@ -25,7 +25,12 @@ echo'<div class="container">';
         if (!isset($_GET['modules']))
             echo'<a href="index.php?modules" class="addButton">Files '.$singleton->spaces(5).'</a>';
         else
-            echo'<a href="index.php" class="addButton">Examples '.$singleton->spaces(5).'</a>';
+            echo'<a href="index.php" class="addButton">Close '.$singleton->spaces(5).'</a>';
+
+        if (!isset($_GET['announcement']))
+            echo'<a href="index.php?announcement" class="addButton">Announcement '.$singleton->spaces(5).'</a>';
+        else
+            echo'<a href="index.php" class="addButton">Close '.$singleton->spaces(5).'</a>';
     echo'</div>';
 
     # Add/Edit container
@@ -53,7 +58,7 @@ echo'<div class="container">';
                         echo'<td>';
                             echo"'''<br>Code example<br>'''";
                         echo'</td><td>';
-                            echo"Encapsulate using 3 single-quotes will generate a codebox - This is for showing how to invoke your feature. Completly fucking useless considering HTML is allowed.. Also, you need to format/encode the examples. A &lt;div&gt; has to be escaped so it won't be an actual div.. Fucking stupid, useless peace of shit.";
+                            echo"Encapsulate using 3 single-quotes will generate a codebox - This is for showing how to invoke your feature. Completly fucking useless considering HTML is allowed.. Also, you need to format/encode the examples. A &lt;div&gt; has to be escaped so it won't be an actual div.. Useless peace of shit.";
                         echo'</td>';
                         echo'</tr><tr>';
                         echo'<td>';
@@ -82,7 +87,7 @@ echo'<div class="container">';
                     echo'</p>';
                 echo'</div>';
 
-                echo'<textarea rows="30" class="inputs" id="contentInput" name="content">'.$controller->getViewInputs()['content'].'</textarea>';
+                echo'<textarea rows="30" class="inputs" id="contentInput" name="content">'.htmlspecialchars($controller->getViewInputs()['content']).'</textarea>';
                 if (!isset($_GET['edit']))
                     echo'<input type="submit" class="inputSubmit" name="addExample" value="Add Example"/>';
                 else

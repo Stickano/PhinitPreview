@@ -32,7 +32,7 @@ class StringHandler {
         }
 
         if(is_array($replaceWith) && count($replaceWith) == 2)
-            return self::multiReplace($content, $positions, $replaceWith);
+            return self::multiReplace($content, $positions, $replaceWith, strlen(htmlspecialchars($search)));
         else
             return $positions;
     }
@@ -44,7 +44,7 @@ class StringHandler {
      * @param  array  $replaceWith Replace with this content (startContent => stopContent)
      * @return string              The formatted text
      */
-    private function multiReplace(string $content, array $positions, array $replaceWith){
+    private function multiReplace(string $content, array $positions, array $replaceWith, int $replaceLength){
         $txt = $content;
         $result = array_reverse($positions, true);
         foreach ($result as $key) {
@@ -59,7 +59,7 @@ class StringHandler {
                 else
                     $replace = $replaceWith[1];
 
-                $txt = substr_replace($txt, $replace, $key[$br], 5);
+                $txt = substr_replace($txt, $replace, $key[$br], $replaceLength);
                 $br++;
             }
         }
