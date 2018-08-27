@@ -1,8 +1,8 @@
 # Content Management System (CMS)
-This is the administration tool for the PHPinit examples displayed in the client, as seen on [phpinit.com](https://phpinit.com).
+This is the administration tool for the PHPinit examples, displayed in the client - As seen on [phpinit.com](https://phpinit.com).
 
 ### Requirements
-Through this CMS you are able to create, update and delete examples. Have an overview of uploaded models, and remove them if necessary. You can edit the welcome message, shown before the examples, and lastly you get an overview of visits on the client site.
+Through this CMS you are able to create, update and delete examples. Have an overview of uploaded models, and remove them if necessary. You can edit the welcome message (which shown before the examples) and lastly you get an overview of visits on the client site.
 
 ##### Creating Examples
 There is a few formatting helpers in place when creating new examples. To be able and create a dynamic variety of examples and their preview, HTML is allowed.
