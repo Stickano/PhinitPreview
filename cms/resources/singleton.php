@@ -18,8 +18,9 @@ final class Singleton {
     public static $page;
     public static $controller;
 
-    # Session Handler
+    # Session Handler & Errors
     public static $session;
+    public static $error;
 
     # Private constructor to ensure it won't be initialized
     private function __construct(){}
@@ -42,6 +43,7 @@ final class Singleton {
             self::setDb();
             self::getView();
             self::getController();
+            self::checkError();
         }
 
         return self::$instance;
@@ -109,6 +111,26 @@ final class Singleton {
      */
     public static function getDb(){
         return self::$crud;
+    }
+
+    /**
+     * Checks if any errors, sets $error and unsets session
+     * @return          Defines the $error variable
+     */
+    # TODO: Will change to several errors handling
+    private static function checkError() {
+        if(isset($_SESSION['error'])) {
+            self::$error =  $_SESSION['error'];
+            unset($_SESSION['error']);
+        }
+    }
+
+    /**
+     * Returns any error message
+     * @return string   Error message TODO: Will change
+     */
+    public static function getError() {
+        return self::$error;
     }
 
     /**

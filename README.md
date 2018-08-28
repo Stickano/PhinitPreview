@@ -9,4 +9,4 @@ Both these website, the client and cms, are quite simple and small. They are bui
 
 PHPinit is a set of PHP models that can be used for a variety of backend functionality for your web based projects. You can study the models [here on Github](https://github.com/Stickano/Phpinit) or preview the example on [phpinit.com](https://phpinit.com).
 
-The examples are fetched from a database. The setup of this database is included in the `database.sql` file, which can easily be imported to your own databases.
+The examples are fetched from a database. An example and setup of the database, which can easily be imported to your own database management system, is available with the `database.sql` file.
